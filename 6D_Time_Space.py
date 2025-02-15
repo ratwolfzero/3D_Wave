@@ -55,7 +55,7 @@ def create_frame(X, Y, wave_amplitude, t_val, fixed_dims, animated_dim):
     )
 
 # Function to update the figure based on user selection
-def update_figure(fixed_dims, animated_dim, animated_values):
+def update_figure(fixed_dims, animated_dims, animated_values):
     # Fix the selected dimensions
     fixed_Z = fixed_dims.get('Z', 0)
     fixed_T_x = fixed_dims.get('T_x', 0)
@@ -80,35 +80,36 @@ def update_figure(fixed_dims, animated_dim, animated_values):
 
     # Create frames for animation
     frames = []
-    for t_val in animated_values:
-        if animated_dim == 'T_x':
-            wave_amplitude = wave_function(X[:, :, 0, 0, 0, 0, 0], Y[:, :, 0, 0, 0, 0, 0], fixed_Z, t_val, fixed_T_y, fixed_T_z, fixed_T)
-        elif animated_dim == 'T_y':
-            wave_amplitude = wave_function(X[:, :, 0, 0, 0, 0, 0], Y[:, :, 0, 0, 0, 0, 0], fixed_Z, fixed_T_x, t_val, fixed_T_z, fixed_T)
-        elif animated_dim == 'T_z':
-            wave_amplitude = wave_function(X[:, :, 0, 0, 0, 0, 0], Y[:, :, 0, 0, 0, 0, 0], fixed_Z, fixed_T_x, fixed_T_y, t_val, fixed_T)
-        elif animated_dim == 'Z':
-            wave_amplitude = wave_function(X[:, :, 0, 0, 0, 0, 0], Y[:, :, 0, 0, 0, 0, 0], t_val, fixed_T_x, fixed_T_y, fixed_T_z, fixed_T)
-        elif animated_dim == 'T':
-            wave_amplitude = wave_function(X[:, :, 0, 0, 0, 0, 0], Y[:, :, 0, 0, 0, 0, 0], fixed_Z, fixed_T_x, fixed_T_y, fixed_T_z, t_val)
-        else:
-            raise ValueError("Invalid animated dimension")
+    for animated_dim, animated_values in animated_dims.items():
+        for t_val in animated_values:
+            if animated_dim == 'T_x':                                                                                               
+                wave_amplitude = wave_function(X[:, :, 0, 0, 0, 0, 0], Y[:, :, 0, 0, 0, 0, 0], fixed_Z, t_val, fixed_T_y, fixed_T_z, fixed_T)
+            elif animated_dim == 'T_y':
+                wave_amplitude = wave_function(X[:, :, 0, 0, 0, 0, 0], Y[:, :, 0, 0, 0, 0, 0], fixed_Z, fixed_T_x, t_val, fixed_T_z, fixed_T)
+            elif animated_dim == 'T_z':
+                wave_amplitude = wave_function(X[:, :, 0, 0, 0, 0, 0], Y[:, :, 0, 0, 0, 0, 0], fixed_Z, fixed_T_x, fixed_T_y, t_val, fixed_T)
+            elif animated_dim == 'Z':
+                wave_amplitude = wave_function(X[:, :, 0, 0, 0, 0, 0], Y[:, :, 0, 0, 0, 0, 0], t_val, fixed_T_x, fixed_T_y, fixed_T_z, fixed_T)
+            elif animated_dim == 'T':
+                wave_amplitude = wave_function(X[:, :, 0, 0, 0, 0, 0], Y[:, :, 0, 0, 0, 0, 0], fixed_Z, fixed_T_x, fixed_T_y, fixed_T_z, t_val)
+            else:
+                raise ValueError("Invalid animated dimension")
 
-        frame = create_frame(X[:, :, 0, 0, 0, 0, 0], Y[:, :, 0, 0, 0, 0, 0], wave_amplitude, t_val, fixed_dims, animated_dim)
-        frames.append(frame)
+            frame = create_frame(X[:, :, 0, 0, 0, 0, 0], Y[:, :, 0, 0, 0, 0, 0], wave_amplitude, t_val, fixed_dims, animated_dim)
+            frames.append(frame)
 
     # Add frames to the figure
     fig.frames = frames
 
     # Add animation controls
     fig.update_layout(
-        title=f"6D Wave Propagation with Time Intersection (Fixed: {fixed_dims}, Animated: {animated_dim})",
+        title=f"6D Wave Propagation with Oscillation Between Time and Space",
         scene=dict(
             xaxis_title="X (Spatial Dimension 1)",
             yaxis_title="Y (Spatial Dimension 2)",
             zaxis_title="Wave Amplitude",
             zaxis=dict(range=[-1, 1])  # Set Z-axis range for wave amplitude
-        ),                               
+        ),
         updatemenus=[dict(
             type="buttons",
             buttons=[
@@ -126,7 +127,7 @@ def update_figure(fixed_dims, animated_dim, animated_values):
                         method="animate",
                         args=[[f"frame_{t_val:.2f}"], {"frame": {"duration": 100, "redraw": True}, "mode": "immediate"}],
                         label=f"{t_val:.2f}"
-                    ) for t_val in animated_values
+                    ) for t_val in np.concatenate(list(animated_dims.values()))
                 ]
             )
         ]
@@ -135,9 +136,12 @@ def update_figure(fixed_dims, animated_dim, animated_values):
     return fig
 
 # Example usage
-fixed_dims = {'X': 0, 'T_x': 0, 'T_z': 0, 'T': 0}
-animated_dim = 'T_y'
-animated_values = t_y
+fixed_dims = {'Z': 0, 'T_x': 0, 'T_y': 0, 'T_z': 0}  # Fix Z, T_x, T_y, T_z
+animated_dims = {
+    'T': t,  # Animate shared time dimension T
+    'Z': z,  # Animate spatial dimension Z
+    'T_x': t_x  # Animate time dimension T_x
+}
 
-fig = update_figure(fixed_dims, animated_dim, animated_values)
+fig = update_figure(fixed_dims, animated_dims, animated_values=None)
 fig.show()
