@@ -13,7 +13,7 @@ omega_y = 1  # Angular frequency in T_y direction
 omega_z = 1  # Angular frequency in T_z direction
 
 # Choose which axis to animate: "x", "y", or "z"
-animated_axis = "y"  # Change this to "x", "y", or "z"
+animated_axis = "x"  # Change this to "x", "y", or "z"
 
 # Select the correct time array based on user choice
 if animated_axis == "x":
