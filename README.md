@@ -1,6 +1,8 @@
 # What This Visualization Represents
 
-## This animation shows a 3D wave propagating through space over time. Imagine a wave, like a ripple on the surface of water, but extended into three dimensions. The wave's shape and amplitude change as time progresses, creating a dynamic, evolving pattern
+## Work in Progress
+
+### This animation shows a 3D wave propagating through space over time. Imagine a wave, like a ripple on the surface of water, but extended into three dimensions. The wave's shape and amplitude change as time progresses, creating a dynamic, evolving pattern
 
 ![3D_Wave](3D_Wave.png)
 
